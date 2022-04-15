@@ -240,7 +240,7 @@ data:
     unixsocketperm 777
     port 0
     bind 127.0.0.1
-  receptor_conf: |
+  task_receptor_conf: |
     ---
     - log-level: debug
 
@@ -249,7 +249,11 @@ data:
         filename: /var/run/receptor/receptor.sock
         permissions: 0660
 
-    - local-only:
+    - node:
+        id: awx-task
+    
+    - tcp-listener:
+        port: 2222
 
     - work-command:
         worktype: local
@@ -269,4 +273,23 @@ data:
         authmethod: incluster
         allowruntimeauth: true
         allowruntimepod: true
+        allowruntimeparams: true
+
+  ee_receptor_conf: |
+    ---
+    - log-level: debug
+
+    - control-service:
+        service: control
+
+    - node:
+        id: awx-ee
+    
+    - tcp-peer:
+        address: localhost:2222
+
+    - work-command:
+        worktype: ansible-runner
+        command: ansible-runner
+        params: worker
         allowruntimeparams: true

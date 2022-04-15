@@ -238,7 +238,7 @@ spec:
               mountPath: "/var/run/awx-rsyslog"
             - name: rsyslog-dir
               mountPath: "/var/lib/awx/rsyslog"
-            - name: "{{ ansible_operator_meta.name }}-receptor-config"
+            - name: "{{ ansible_operator_meta.name }}-task-receptor-config"
               mountPath: "/etc/receptor/receptor.conf"
               subPath: receptor.conf
               readOnly: true
@@ -292,7 +292,7 @@ spec:
               subPath: bundle-ca.crt
               readOnly: true
 {% endif %}
-            - name: "{{ ansible_operator_meta.name }}-receptor-config"
+            - name: "{{ ansible_operator_meta.name }}-ee-receptor-config"
               mountPath: "/etc/receptor/receptor.conf"
               subPath: receptor.conf
               readOnly: true
@@ -409,11 +409,17 @@ spec:
           emptyDir: {}
         - name: rsyslog-dir
           emptyDir: {}
-        - name: {{ ansible_operator_meta.name }}-receptor-config
+        - name: {{ ansible_operator_meta.name }}-task-receptor-config
           configMap:
             name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
             items:
-              - key: receptor_conf
+              - key: task_receptor_conf
+                path: receptor.conf
+        - name: {{ ansible_operator_meta.name }}-ee-receptor-config
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: ee_receptor_conf
                 path: receptor.conf
         - name: "{{ ansible_operator_meta.name }}-projects"
 {% if projects_persistence|bool %}
